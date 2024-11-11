@@ -20,3 +20,15 @@ async def post(pessoa : Pessoa):
     return {
         "request body" :pessoa
     }
+
+@app.delete('/{id}')
+async def put(id:str):
+    if id is 10:
+        return {"message":f"{id} ta vendo que o id é 10"}
+    return {"message":id}
+    
+@app.put('/{id}')
+async def delete(id : str, pessoa : Pessoa):
+    if id is 10:
+        return {"message":f"{id} ta vendo que id é 10"}
+    return {"message":{id:pessoa}}
