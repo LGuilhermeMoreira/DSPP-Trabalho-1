@@ -29,6 +29,6 @@ async def put(id:str):
     
 @app.put('/{id}')
 async def delete(id : str, pessoa : Pessoa):
-    if id is 10:
+    if id is "10":
         return {"message":f"{id} ta vendo que id é 10"}
     return {"message":{id:pessoa}}
