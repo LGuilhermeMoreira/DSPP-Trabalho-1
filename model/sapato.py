@@ -1,7 +1,9 @@
 from pydantic import BaseModel
+from uuid import UUID
+
 
 class Sapato(BaseModel):
-    id : int | None = None #opicional para rota de put
+    id : UUID | None = None #opicional para rota de put
     modelo : str
     tamanho : int
     cor : int
