@@ -15,7 +15,7 @@ async def root():
     }
 
 # codigo referemte a funcionalidade 1
-@app.post(path='/sapato/')
+@app.post(path='/sapato/',status_code=201)
 async def F1(dto: CreateSapatoDto):
     try:
         sapato = Sapato(
