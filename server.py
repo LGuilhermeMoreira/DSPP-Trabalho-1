@@ -28,7 +28,7 @@ async def F1(dto: CreateSapatoDto):
         return response
     except AttributeError as e:
         # Exceção se o DTO não tiver atributos esperados
-        raise HTTPException(status_code=400, detail=f"Atributo ausente ou inválido: {e}")
+        raise HTTPException(status_code=400,  detail=f"Atributo ausente ou inválido: {e}")
     except Exception as e:
         # Captura outras exceções não esperadas
         raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao processar a requisição: {e}")
