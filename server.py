@@ -1,7 +1,7 @@
 from fastapi import FastAPI,HTTPException
 from model.sapato import Sapato
 from utils.file import HandleFile
-from dto.dto import CreateSapatoDto
+from dto.dto import CreateSapatoDto,UpdateSapatoDto
 
 DATABASE_PATH = './db/database.csv'
 
@@ -32,3 +32,27 @@ async def F1(dto: CreateSapatoDto):
     except Exception as e:
         # Captura outras exceções não esperadas
         raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao processar a requisição: {e}")
+
+@app.get(path='/sapato/',status_code=200)
+async def F2():
+    try:
+        response = handleFile.getSapatos()
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
+    
+@app.get(path='/sapato/{id}/',status_code=200)
+async def F2_getById(id):
+    try:
+        response = handleFile.getSapatoById(id)
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
+    
+@app.update(path='/sapato/{id}',status_code=200)
+async def F3_update(id,body : UpdateSapatoDto):
+    try:
+        response = handleFile.updateSapato(id,body)
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')

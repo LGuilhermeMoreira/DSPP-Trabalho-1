@@ -1,6 +1,8 @@
 from model.sapato import Sapato
+from uuid import UUID
 import csv
 import os
+from dto.dto import UpdateSapatoDto
 
 class HandleFile():
     path : str
@@ -24,11 +26,30 @@ class HandleFile():
             fileWriter.writerow(dados)
         return sapato
 
-    def getSapatos(self):
-        pass
+    import csv
 
-    def getSapatoById(self, id : int):
-        pass
+    def getSapatos(self) -> list:
+        dados = []
+        with open(self.path, mode='r', encoding='utf-8') as arquivo:
+            leitor = csv.DictReader(arquivo)
+            for linha in leitor:
+                dados.append({
+                    'id': linha['id'],
+                    'modelo': linha['modelo'],
+                    'tamanho': linha['tamanho'],
+                    'cor': linha['cor'],
+                    'marca': linha['marca'],
+                    'created_at': linha['created_at'],
+                })
+        return dados
+        
 
-    def updateSapato(self,id : int,sapato : Sapato):
+    def getSapatoById(self, id : UUID) -> dict:
+        with open(self.path, mode='r', encoding='utf-8') as arquivo:
+            leitor = csv.DictReader(arquivo)
+            for linha in leitor:
+               if linha['id'] == str(id):
+                   return linha
+
+    def updateSapato(self,id : UUID,sapato : UpdateSapatoDto):
         pass
