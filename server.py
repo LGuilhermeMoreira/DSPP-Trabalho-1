@@ -5,7 +5,6 @@ from utils.file import HandleFile
 from dto.dto import CreateSapatoDto,UpdateSapatoDto
 
 DATABASE_PATH = './db/database.csv'
-
 handleFile = HandleFile(DATABASE_PATH)
 app = FastAPI()
 
