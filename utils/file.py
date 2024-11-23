@@ -26,8 +26,6 @@ class HandleFile():
             fileWriter.writerow(dados)
         return sapato
 
-    import csv
-
     def getSapatos(self) -> list:
         dados = []
         with open(self.path, mode='r', encoding='utf-8') as arquivo:
@@ -51,5 +49,30 @@ class HandleFile():
                if linha['id'] == str(id):
                    return linha
 
-    def updateSapato(self,id : UUID,sapato : UpdateSapatoDto):
-        pass
+    def updateSapato(self,id : UUID,sapato : UpdateSapatoDto) -> None:
+        dados = []
+        with open(self.path, mode='r', encoding='utf-8') as arquivo:
+            leitor = csv.DictReader(arquivo)
+            for linha in leitor:
+                if linha['id'] == str(id):
+                    linha['modelo'] = sapato.modelo
+                    linha['tamanho'] = sapato.tamanho
+                    linha['cor'] = sapato.cor
+                    linha['marca'] = sapato.marca
+                dados.append(linha)
+        with open(self.path, mode='w', newline='', encoding='utf-8') as arquivo:
+            fileWriter = csv.DictWriter(arquivo, fieldnames=['id', 'modelo', 'tamanho', 'cor', 'marca', 'created_at'])
+            fileWriter.writeheader()
+            fileWriter.writerows(dados)
+
+    def deleteSapato(self,id : UUID) -> None:
+        dados = []
+        with open(self.path, mode='r', encoding='utf-8') as arquivo:
+            leitor = csv.DictReader(arquivo)
+            for linha in leitor:
+                if linha['id'] != str(id):
+                    dados.append(linha)
+        with open(self.path, mode='w', newline='', encoding='utf-8') as arquivo:
+            fileWriter = csv.DictWriter(arquivo, fieldnames=['id', 'modelo', 'tamanho', 'cor', 'marca', 'created_at'])
+            fileWriter.writeheader()
+            fileWriter.writerows(dados)

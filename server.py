@@ -1,3 +1,4 @@
+# python -m uvicorn server:app --reload
 from fastapi import FastAPI,HTTPException
 from model.sapato import Sapato
 from utils.file import HandleFile
@@ -49,10 +50,18 @@ async def F2_getById(id):
     except Exception as e:
         raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
     
-@app.update(path='/sapato/{id}',status_code=200)
+@app.put(path='/sapato/{id}',status_code=200)
 async def F3_update(id,body : UpdateSapatoDto):
     try:
         response = handleFile.updateSapato(id,body)
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
+
+@app.delete(path='/sapato/{id}',status_code=200)
+async def F4_delete(id):
+    try:
+        response = handleFile.deleteSapato(id)
         return response
     except Exception as e:
         raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
