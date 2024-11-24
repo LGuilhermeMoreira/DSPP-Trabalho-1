@@ -1,12 +1,43 @@
 # python -m uvicorn server:app --reload
-from fastapi import FastAPI,HTTPException
+from datetime import datetime
+from fastapi import FastAPI,HTTPException,Request
 from model.sapato import Sapato
 from utils.file import HandleFile
 from dto.dto import CreateSapatoDto,UpdateSapatoDto
+from utils.log import LogSystem,read_config
+
+
 
 DATABASE_PATH = './db/database.csv'
+YAML_PATH = './config.yml'
 handleFile = HandleFile(DATABASE_PATH)
+config = read_config(YAML_PATH)
+log_config = config["logging"]
+handleLog = LogSystem(
+    level=log_config["level"],
+    log_file=log_config["file"],
+    format=log_config["format"],
+)
 app = FastAPI()
+
+@app.middleware('http')
+async def F8(request: Request, call_next):
+    start_time = datetime.now()  
+    response = await call_next(request)  
+    duration = (datetime.now() - start_time).total_seconds() 
+
+    if 400 <= response.status_code < 500:
+        log_level = "ERROR"
+    elif response.status_code >= 500:
+        log_level = "CRITICAL"
+    else:
+        log_level = "INFO"
+
+    handleLog.add_log(
+        f"{request.method} {request.url} | Status: {response.status_code} | Duration: {duration:.2f}s",
+        level=log_level,
+    )
+    return response
 
 @app.get(path='/')
 async def root(): 
@@ -30,7 +61,6 @@ async def F1(dto: CreateSapatoDto):
         # Exceção se o DTO não tiver atributos esperados
         raise HTTPException(status_code=400,  detail=f"Atributo ausente ou inválido: {e}")
     except Exception as e:
-        # Captura outras exceções não esperadas
         raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao processar a requisição: {e}")
 
 @app.get(path='/sapato/',status_code=200)
@@ -45,6 +75,8 @@ async def F2():
 async def F2_getById(id):
     try:
         response = handleFile.getSapatoById(id)
+        if response is None:
+            raise HTTPException(status_code=404,detail=f'id não encontrado')
         return response
     except Exception as e:
         raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
