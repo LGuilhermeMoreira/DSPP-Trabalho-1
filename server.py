@@ -58,9 +58,26 @@ async def F3_update(id,body : UpdateSapatoDto):
         raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
 
 @app.delete(path='/sapato/{id}',status_code=200)
-async def F4_delete(id):
+async def F3_delete(id):
     try:
         response = handleFile.deleteSapato(id)
         return response
     except Exception as e:
         raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
+    
+@app.get(path='/sapato/len',status_code=200)
+async def F4():
+    try:
+        response = handleFile.getLenAllEntity()
+        return response
+    except Exception as e:    
+        raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
+    
+@app.get(path='/sapato/hash',status_code=200)
+async def F7():
+    try:
+        response = handleFile.getHashFile()
+        return response
+    except Exception as e:    
+        raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
+    
