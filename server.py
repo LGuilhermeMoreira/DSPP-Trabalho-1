@@ -49,7 +49,7 @@ async def F2_getById(id):
     except Exception as e:
         raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
     
-@app.update(path='/sapato/{id}',status_code=200)
+@app.put(path='/sapato/{id}',status_code=200)
 async def F3_update(id,body : UpdateSapatoDto):
     try:
         response = handleFile.updateSapato(id,body)
