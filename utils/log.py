@@ -12,8 +12,9 @@ class LogSystem:
         self.configure_logging()
 
     def create_file(self):
-        with open(self.log_file, mode='w') as arquivo:
-            pass
+        if not os.path.exists(self.log_file):
+            with open(self.log_file, mode='w') as arquivo:
+                pass
 
     def configure_logging(self):
         logging.basicConfig(
