@@ -92,7 +92,7 @@ class HandleFile():
     def filterSapatos(
         self,
         modelo: Optional[str] = None,
-        tamanho: Optional[str] = None,
+        tamanho: Optional[int] = None,
         cor: Optional[str] = None,
         marca: Optional[str] = None,
     ) -> list:
@@ -102,7 +102,7 @@ class HandleFile():
         if modelo:
             sapatos = [s for s in sapatos if s['modelo'].lower() == modelo.lower()]
         if tamanho:
-            sapatos = [s for s in sapatos if s['tamanho'].lower() == cor.lower()]
+            sapatos = [s for s in sapatos if int(s['tamanho']) == tamanho]
         if cor:
             sapatos = [s for s in sapatos if s['cor'].lower() == cor.lower()]
         if marca:

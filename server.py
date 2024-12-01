@@ -1,5 +1,5 @@
 # python -m uvicorn server:app --reload
-from fastapi import FastAPI,HTTPException
+from fastapi import FastAPI,HTTPException, Query
 from model.sapato import Sapato
 from utils.file import HandleFile
 from dto.dto import CreateSapatoDto,UpdateSapatoDto
@@ -86,7 +86,7 @@ async def download_csv_zip():
 @app.get(path='/sapato/filter', status_code=200)
 async def filter_sapatos(
     modelo: Optional[str] = None,
-    tamanho: Optional[str] = None,
+    tamanho: Optional[int] = Query(None, alias="tamanho"),
     cor: Optional[str] = None,
     marca: Optional[str] = None
 ):
