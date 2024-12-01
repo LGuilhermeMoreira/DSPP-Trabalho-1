@@ -10,9 +10,11 @@ from utils.log import LogSystem,read_config
 
 DATABASE_PATH = './db/database.csv'
 YAML_PATH = './config.yml'
-handleFile = HandleFile(DATABASE_PATH)
+
 config = read_config(YAML_PATH)
 log_config = config["logging"]
+
+handleFile = HandleFile(DATABASE_PATH)
 handleLog = LogSystem(
     level=log_config["level"],
     log_file=log_config["file"],
