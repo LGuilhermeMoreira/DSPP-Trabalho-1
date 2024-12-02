@@ -2,6 +2,7 @@ from model.sapato import Sapato
 from uuid import UUID
 import csv
 import os
+import hashlib #doc: https://docs.python.org/3/library/hashlib.html
 from dto.dto import UpdateSapatoDto
 import zipfile
 from typing import Optional
@@ -79,6 +80,30 @@ class HandleFile():
             fileWriter.writeheader()
             fileWriter.writerows(dados)
 
+    
+    def getLenAllEntity(self) -> int:
+        dados = []
+        with open(self.path, mode='r', encoding='utf-8') as arquivo:
+            leitor = csv.DictReader(arquivo)
+            for linha in leitor:
+                dados.append({
+                    'id': linha['id'],
+                    'modelo': linha['modelo'],
+                    'tamanho': linha['tamanho'],
+                    'cor': linha['cor'],
+                    'marca': linha['marca'],
+                    'created_at': linha['created_at'],
+                })
+        return {"len" : len(dados)}
+    
+    def getHashFile(self) -> str:
+        m = hashlib.sha256()
+        with open(self.path,mode='rb') as file: 
+             for chunk in iter(lambda: file.read(4096), b""): 
+                m.update(chunk)
+        return {"hash" : m.hexdigest()}
+
+
     def createZip(self, zip_path: str) -> str:
 
         if not os.path.exists(self.path):
@@ -109,3 +134,4 @@ class HandleFile():
             sapatos = [s for s in sapatos if s['marca'].lower() == marca.lower()]
 
         return sapatos
+
