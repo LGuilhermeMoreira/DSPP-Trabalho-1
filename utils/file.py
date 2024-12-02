@@ -4,6 +4,8 @@ import csv
 import os
 import hashlib #doc: https://docs.python.org/3/library/hashlib.html
 from dto.dto import UpdateSapatoDto
+import zipfile
+from typing import Optional
 
 class HandleFile():
     path : str
@@ -77,6 +79,7 @@ class HandleFile():
             fileWriter = csv.DictWriter(arquivo, fieldnames=['id', 'modelo', 'tamanho', 'cor', 'marca', 'created_at'])
             fileWriter.writeheader()
             fileWriter.writerows(dados)
+
     
     def getLenAllEntity(self) -> int:
         dados = []
@@ -99,3 +102,36 @@ class HandleFile():
              for chunk in iter(lambda: file.read(4096), b""): 
                 m.update(chunk)
         return {"hash" : m.hexdigest()}
+
+
+    def createZip(self, zip_path: str) -> str:
+
+        if not os.path.exists(self.path):
+            raise FileNotFoundError("Arquivo CSV não encontrado.")
+
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            zipf.write(self.path, arcname=os.path.basename(self.path))
+        
+        return zip_path
+
+    def filterSapatos(
+        self,
+        modelo: Optional[str] = None,
+        tamanho: Optional[int] = None,
+        cor: Optional[str] = None,
+        marca: Optional[str] = None,
+    ) -> list:
+        
+        sapatos = self.getSapatos()
+        
+        if modelo:
+            sapatos = [s for s in sapatos if s['modelo'].lower() == modelo.lower()]
+        if tamanho:
+            sapatos = [s for s in sapatos if int(s['tamanho']) == tamanho]
+        if cor:
+            sapatos = [s for s in sapatos if s['cor'].lower() == cor.lower()]
+        if marca:
+            sapatos = [s for s in sapatos if s['marca'].lower() == marca.lower()]
+
+        return sapatos
+
