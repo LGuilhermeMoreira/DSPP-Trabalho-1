@@ -8,7 +8,7 @@ from dto.dto import CreateSapatoDto,UpdateSapatoDto
 from utils.log import LogSystem,read_config
 from fastapi.responses import FileResponse
 from typing import Optional
-
+from fastapi.middleware.cors import CORSMiddleware
 
 zip_path = './db/produtos.zip'
 DATABASE_PATH = './db/database.csv'
@@ -25,7 +25,13 @@ handleLog = LogSystem(
     format=log_config["format"],
 )
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"],  
+)
 @app.middleware('http')
 async def F8(request: Request, call_next):
     start_time = datetime.now()  
