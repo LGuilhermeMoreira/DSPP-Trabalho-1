@@ -6,6 +6,7 @@ import hashlib #doc: https://docs.python.org/3/library/hashlib.html
 from dto.dto import UpdateSapatoDto
 import zipfile
 from typing import Optional
+from fastapi import HTTPException
 
 class HandleFile():
     path : str
@@ -51,9 +52,12 @@ class HandleFile():
             for linha in leitor:
                if linha['id'] == str(id):
                    return linha
+        raise HTTPException(status_code=404,detail='ID não encontrado')
 
-    def updateSapato(self,id : UUID,sapato : UpdateSapatoDto) -> None:
+    def updateSapato(self,id : UUID,sapato : UpdateSapatoDto) -> dict:
         dados = []
+        id_encontrado = False
+        sapato_atualizado = None
         with open(self.path, mode='r', encoding='utf-8') as arquivo:
             leitor = csv.DictReader(arquivo)
             for linha in leitor:
@@ -62,19 +66,30 @@ class HandleFile():
                     linha['tamanho'] = sapato.tamanho
                     linha['cor'] = sapato.cor
                     linha['marca'] = sapato.marca
+                    id_encontrado = True
+                    sapato_atualizado = linha
                 dados.append(linha)
+        
+        if not id_encontrado:
+            raise HTTPException(status_code=404,detail='ID não encontrado')
         with open(self.path, mode='w', newline='', encoding='utf-8') as arquivo:
             fileWriter = csv.DictWriter(arquivo, fieldnames=['id', 'modelo', 'tamanho', 'cor', 'marca', 'created_at'])
             fileWriter.writeheader()
             fileWriter.writerows(dados)
+        return sapato_atualizado
 
     def deleteSapato(self,id : UUID) -> None:
+        id_encontrado = False
         dados = []
         with open(self.path, mode='r', encoding='utf-8') as arquivo:
             leitor = csv.DictReader(arquivo)
             for linha in leitor:
                 if linha['id'] != str(id):
                     dados.append(linha)
+                else:
+                    id_encontrado = True
+        if not id_encontrado:
+            raise HTTPException(status_code=404,detail='ID não encontrado')
         with open(self.path, mode='w', newline='', encoding='utf-8') as arquivo:
             fileWriter = csv.DictWriter(arquivo, fieldnames=['id', 'modelo', 'tamanho', 'cor', 'marca', 'created_at'])
             fileWriter.writeheader()

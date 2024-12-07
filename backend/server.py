@@ -10,6 +10,7 @@ from fastapi.responses import FileResponse
 from typing import Optional
 
 
+zip_path = './db/produtos.zip'
 DATABASE_PATH = './db/database.csv'
 YAML_PATH = './config.yml'
 ZIP_PATH = './db/produtos.zip'
@@ -44,13 +45,12 @@ async def F8(request: Request, call_next):
     )
     return response
 
-@app.get(path='/')
+@app.get(path='/',status_code=200)
 async def root(): 
     return {
         "ping":"pong"
     }
 
-# codigo referemte a funcionalidade 1
 @app.post(path='/sapato/',status_code=201)
 async def F1(dto: CreateSapatoDto):
     try:
@@ -63,7 +63,6 @@ async def F1(dto: CreateSapatoDto):
         response = handleFile.addSapato(sapato)
         return response
     except AttributeError as e:
-        # Exceção se o DTO não tiver atributos esperados
         raise HTTPException(status_code=400,  detail=f"Atributo ausente ou inválido: {e}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao processar a requisição: {e}")
@@ -80,9 +79,9 @@ async def F2():
 async def F2_getById(id):
     try:
         response = handleFile.getSapatoById(id)
-        if response is None:
-            raise HTTPException(status_code=404,detail=f'id não encontrado')
         return response
+    except HTTPException as http_e:
+        raise http_e
     except Exception as e:
         raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
     
@@ -91,14 +90,18 @@ async def F3_update(id,body : UpdateSapatoDto):
     try:
         response = handleFile.updateSapato(id,body)
         return response
+    except HTTPException as http_e:
+        raise http_e
     except Exception as e:
         raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
 
-@app.delete(path='/sapato/{id}',status_code=200)
+@app.delete(path='/sapato/{id}',status_code=204)
 async def F3_delete(id):
     try:
         response = handleFile.deleteSapato(id)
         return response
+    except HTTPException as http_e:
+        raise http_e
     except Exception as e:
         raise HTTPException(status_code=500,detail=f'Ocorreu um erro no servidor: {e}')
     
@@ -121,12 +124,11 @@ async def F7():
     
 
 @app.get(path='/sapato/download-zip', status_code=200)
-async def download_csv_zip():
+async def F5():
     try:
-        zip_path = './db/produtos.zip'
-        handleFile.createZip(zip_path)
+        handleFile.createZip(ZIP_PATH)
         return FileResponse(
-            path=zip_path,
+            path=ZIP_PATH,
             filename='produtos.zip',
             media_type='application/zip'
         )
@@ -136,7 +138,7 @@ async def download_csv_zip():
         raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao gerar o arquivo ZIP: {e}")
 
 @app.get(path='/sapato/filter', status_code=200)
-async def filter_sapatos(
+async def F6(
     modelo: Optional[str] = None,
     tamanho: Optional[int] = Query(None, alias="tamanho"),
     cor: Optional[str] = None,
@@ -152,6 +154,8 @@ async def filter_sapatos(
         if not response:
             raise HTTPException(status_code=404, detail="Nenhum sapato encontrado com os critérios fornecidos.")
         return response
+    except HTTPException as http_ex:
+        raise http_ex
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ocorreu um erro no servidor: {e}")
 
