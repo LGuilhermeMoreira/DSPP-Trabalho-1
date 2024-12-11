@@ -38,6 +38,40 @@ export const Home = () => {
     }
   };
 
+  const handleGetHash =async () => {
+    try {
+      const response = await SapatoService.GetHash()
+      if(response.data){
+        setStatusMessage(response.data.hash)
+      }
+    } catch (error) {
+      setStatusMessage(`Cód: ${error.response.status} - ${error.response.data?.message}`);
+      message.error("Erro ao carregar o hash do arquivo: " + error.message);
+    }
+  }
+  const handleDownload = async () => {
+    try {
+      const response = await SapatoService.Download();
+      const blob = new Blob([response], { type: "text/csv;charset=utf-8;" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "sapatos.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setStatusMessage("Cód: 200 - CSV Downloaded");
+    } catch (error) {
+      if(error.response){
+        setStatusMessage(`Cód: ${error.response.status} - ${error.response.data?.message}`);
+      }
+      else{
+        setStatusMessage('Erro no codigo');
+      }
+      message.error("Erro ao fazer download do CSV: " + error.message);
+    }
+  };
+
   const handleAddSapato = async (values) => {
     try {
       if (editingSapato) {
@@ -120,6 +154,12 @@ export const Home = () => {
           <ContentButtons>
             <Button type="primary" onClick={() => setModalOpen(true)}>
               Adicionar Sapato
+            </Button>
+            <Button type="primary" onClick={handleGetHash}>
+              Gerar Hash
+            </Button>
+            <Button type="primary" onClick={handleDownload}>
+              Download Csv
             </Button>
           </ContentButtons>
         </ContentBody>
