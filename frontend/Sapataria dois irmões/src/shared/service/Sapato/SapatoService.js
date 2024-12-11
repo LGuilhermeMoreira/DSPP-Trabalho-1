@@ -6,12 +6,12 @@ class SapatoService{
        console.log(response)
     }
 
-    async getSapatoById(id){
+    async GetSapatoById(id){
         const response = await SapatoApi.getByID(id)
         return response
     }
 
-    async getAllSapato(){
+    async GetAllSapato(){
         return await SapatoApi.getAll()
     }
 
