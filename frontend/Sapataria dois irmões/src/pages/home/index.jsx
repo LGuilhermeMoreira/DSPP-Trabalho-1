@@ -52,14 +52,15 @@ export const Home = () => {
   const handleDownload = async () => {
     try {
       const response = await SapatoService.Download();
-      const blob = new Blob([response], { type: "text/csv;charset=utf-8;" });
+      const blob = new Blob([response.data], { type: "application/zip" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "sapatos.csv");
+      link.setAttribute("download", "produtos.zip");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
       setStatusMessage("Cód: 200 - CSV Downloaded");
     } catch (error) {
       if(error.response){
