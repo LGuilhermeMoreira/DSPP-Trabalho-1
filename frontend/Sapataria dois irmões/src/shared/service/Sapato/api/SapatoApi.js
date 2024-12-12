@@ -67,7 +67,9 @@ class SapatoAPI {
 
     async download(){
         try {
-            return await api.get(`/sapato/download-zip`,)
+            return await api.get(`/sapato/download-zip`,{
+                responseType: 'blob'
+            })
         } catch (error) {
             console.log(error)
             return error
